@@ -25,4 +25,4 @@ It allows users to choose a category, difficulty level, number of questions, and
 
 🌍 Live Demo
 You can try the deployed app here:
-👉 [Live Website] (https://quiz-app-six-psi-42.vercel.app/)
+👉 [Live Website](https://quiz-app-six-psi-42.vercel.app/)
