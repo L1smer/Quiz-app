@@ -19,11 +19,12 @@ export default function Quiz({ onEnd }: QuizProps) {
   const [currentQuestionIndex, setIndex] = useState<number>(0);
   const [pickedAnswer, setPickedAnswer] = useState<string>("");
   const [rightAnswers, setRightAnswers] = useState<number>(0);
+  const [shuffledAnswers, setShuffledAnswers] = useState<string[]>([]);
 
   const { category, numOfQuestions, difficulty } = useSettings();
 
   useEffect(() => {
-    fetch(`https://opentdb.com/api.php?amount=${numOfQuestions}&category=${category}&difficulty=${difficulty}`)
+    fetch(`https://opentdb.com/api.php?amount=${numOfQuestions}&category=${category}&difficulty=${difficulty}&type=multiple`)
       .then(response => response.json())
       .then(data => {
         setQuestions(data.results || []);
@@ -34,6 +35,21 @@ export default function Quiz({ onEnd }: QuizProps) {
         setLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    if (questions.length > 0 && questions[currentQuestionIndex]) {
+      const current = questions[currentQuestionIndex];
+      const shuffled = shuffleArray([
+        ...current.incorrect_answers,
+        current.correct_answer
+      ]);
+      setShuffledAnswers(shuffled);
+    }
+  }, [currentQuestionIndex, questions]);
+
+  function shuffleArray(array: any[]) {
+    return array.sort(() => Math.random() - 0.5);
+  }
 
   if (loading) {
     return <h2>Loading questions...</h2>;
@@ -61,17 +77,6 @@ export default function Quiz({ onEnd }: QuizProps) {
 
   const currentQuestion = questions[currentQuestionIndex];
 
-  let shuffledAnswers: string[];
-  if (!currentQuestion) return shuffledAnswers = [];
-  shuffledAnswers = shuffleArray([
-    ...currentQuestion.incorrect_answers,
-    currentQuestion.correct_answer
-  ]); // 💥 Correct dependency
-
-  function shuffleArray(array: any[]) {
-    return array.sort(() => Math.random() - 0.5);
-  }
-
   function pickAnswer(answer: string) {
     setPickedAnswer(answer);
   }
@@ -85,17 +90,17 @@ export default function Quiz({ onEnd }: QuizProps) {
   }
 
   return (
-		<div className="quiz-container">
-			<h1 dangerouslySetInnerHTML={{ __html: currentQuestion.question }} />
-			<div className="answers-container">
-				<Question
-					answers={shuffledAnswers}
-					onPicked={pickAnswer}
-					pickedAnswer={pickedAnswer}
-				/>
-			</div>
-			<button onClick={handleNextQuestion}>Next Question</button>
-			<p className="score">Score: {rightAnswers} / {questions.length}</p>
-		</div>
-	);
+    <div className="quiz-container">
+      <h1 dangerouslySetInnerHTML={{ __html: currentQuestion.question }} />
+      <div className="answers-container">
+        <Question
+          answers={shuffledAnswers}
+          onPicked={pickAnswer}
+          pickedAnswer={pickedAnswer}
+        />
+      </div>
+      <button onClick={handleNextQuestion}>Next Question</button>
+      <p>{currentQuestionIndex + 1} / {questions.length}</p>
+    </div>
+  );
 }
