@@ -23,6 +23,7 @@ It allows users to choose a category, difficulty level, number of questions, and
 - [Vite](https://vitejs.dev/) (Build tool)
 - [Open Trivia Database API](https://opentdb.com/)
 
-🌍 Live Demo
+---
+## 🌍 Live Demo
 You can try the deployed app here:
 👉 [Live Website](https://quiz-app-six-psi-42.vercel.app/)
